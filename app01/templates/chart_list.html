@@ -1,0 +1,171 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">拆线图</div>
+            <div class="panel-body">
+                <div id="m1" style="width: 100%;height: 300px"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-7">
+                <div class="panel panel-default">
+                    <div class="panel-heading">柱状图</div>
+                    <div class="panel-body">
+                        <div id="m2" style="width: 100%;height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">饼图</div>
+                    <div class="panel-body">
+                        <div id="m3" style="width: 100%;height: 400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script type="text/javascript" src="{% static 'js/echarts.min.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            initBar();
+            initPie();
+            initLine();
+        })
+
+        function initBar() {
+            /**
+             * 初始化柱状图
+             */
+                // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('m2'));
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: '柱状图',
+                    textAlign: "center",
+                    left: "center",
+                    subtext: "云南分公司"
+                },
+                tooltip: {},
+                legend: {
+                    data: [], //后台获取
+                    bottom: 0
+                },
+                xAxis: {
+                    data: [] //后台获取
+                },
+                yAxis: {},
+                series: [] //后台获取
+            };
+            // 向后台请求数据
+            $.ajax({
+                url: "/chart/bar/",
+                type: "GET",
+                dataType: "JSON",
+                success: function (res) {
+                    // 将后台的数据更新到图表中
+                    if (res.status) {
+                        option.legend.data = res.data.legend;
+                        option.xAxis.data = res.data.xAxis;
+                        option.series = res.data.series;
+                        myChart.setOption(option);
+                    }
+
+                }
+            })
+        };
+
+        function initPie() {
+            var chartDom = document.getElementById('m3');
+            var myChart = echarts.init(chartDom);
+            var option;
+
+            option = {
+                title: {
+                    text: '部门预算占比',
+                    subtext: '脉地分公司',
+                    left: 'center',
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    bottom: 0,
+                },
+                series: [
+                    {
+                        name: '预算',
+                        type: 'pie',
+                        radius: '60%',
+                        data: [],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+            $.ajax({
+                url: "/chart/pie/",
+                type: "GET",
+                dataType: "JSON",
+                success: function (res) {
+                    // 将后台的数据更新到图表中
+                    if (res.status) {
+                        option.series[0].data = res.data;
+                        myChart.setOption(option);
+                    }
+
+                }
+            })
+
+        };
+
+        function initLine() {
+            var chartDom = document.getElementById('m1');
+            var myChart = echarts.init(chartDom);
+            var option;
+
+            option = {
+                xAxis: {
+                    type: 'category',
+                    data: []
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        data: [],
+                        type: 'line',
+                        smooth: true
+                    }
+                ]
+            };
+            $.ajax({
+                url: "/chart/line/",
+                type: "GET",
+                dataType: "JSON",
+                success: function (res) {
+                    // 将后台的数据更新到图表中
+                    if (res.status) {
+                        option.xAxis.data = res.data.xAxis;
+                        option.series[0].data = res.data.series;
+                        myChart.setOption(option);
+                    }
+
+                }
+            })
+
+        }
+
+    </script>
+{% endblock %}

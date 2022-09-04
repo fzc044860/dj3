@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 10px">
+            <a class="btn btn-success" href="/user/add/">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                新增用户
+            </a>
+        </div>
+        <div class="panel panel-default">
+
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                靓号列表
+            </div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>姓名</th>
+                        <th>密码</th>
+                        <th>性别</th>
+                        <th>年龄</th>
+                        <th>帐户余额</th>
+                        <th>入职时间</th>
+                        <th>部门</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for ob in userlist %}
+                    <tr>
+
+                        <th scope="row">{{ ob.id }}</th>
+                        <td>{{ ob.name }}</td>
+                        <td>{{ ob.password }}</td>
+                        <td>{{ ob.get_gender_display }}</td>
+                        <td>{{ ob.age }}</td>
+                        <td>{{ ob.account }}</td>
+                        <td>{{ ob.creat_time| date:"Y年m月d日" }}</td>
+                        <td>{{ ob.depart.title }}</td>
+                        <td>
+                            <a href="/user/{{ ob.id }}/edit/" class="btn btn-primary btn-xs">编辑</a>
+                            <a href="/user/{{ ob.id }}/delete/" class="btn-danger btn-xs">删除</a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
